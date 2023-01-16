@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head';
-import { Business, DOMAIN_NAME } from '@/utils/Web'
+import { Business, DOMAIN_NAME } from '@/utils/BizSettings'
 
 
 const SeoMetas = (props) => {
