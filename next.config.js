@@ -14,7 +14,8 @@ const nextConfig = {
       'images.unsplash.com',
       'dummyimage.com',
       'cdn.tailgrids.com', 
-      'fancytailwind.com'
+      'fancytailwind.com',
+      'cdn.cnbj0.fds.api.mi-img.com'
     ],
   },
   output: 'standalone',

@@ -1,13 +1,11 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import Image from 'next/image';
-// import WmdsLogo from '../../../public/falcon-courier-logo.png'
-// import wmdslogo from '../../../public/webinoxmedia-logo.png'
 import WhatsAppButton from '../WhatsAppButton';
 import CustomButton from '../CustomButton';
-// import { CartComponent } from '../cart/CartComponent';
-import { useRef } from 'react';
+import { cartTotalPriceSelector, cartTotalSelector, clear, decrement, increament } from "@/redux/features/cartSlice";
 import { AiFillCloseCircle, AiOutlineMinusCircle, AiOutlinePlusCircle } from 'react-icons/ai';
 
 
@@ -16,37 +14,22 @@ const links = [
 	{
 		label: 'Home',
 		href: '/',
-        // icon: (
-        //     <FaHome className="h-4 group-hover:animate-bounce group-hover:text-blue-400" />
-        // )
 	},
     {
         label: 'Products',
         href: '/products',
-        // icon: (
-        //     <FaSearch className="h-4 group-hover:animate-bounce group-hover:text-blue-400" />
-        // )
     },
     {
         label: 'Blogs',
         href: '/blogs',
-        // icon: (
-        //     <FaSearch className="h-4 group-hover:animate-bounce group-hover:text-blue-400" />
-        // )
     },
     {
 		label: 'About',
 		href: '/about',
-        // icon: (
-        //     <FaUser className="h-4 group-hover:animate-bounce group-hover:text-blue-400" />
-        // )
 	},
 	{
 		label: 'Contact',
 		href: '/contact',
-        // icon: (
-        //     <FaAddressCard className="h-4 group-hover:animate-bounce group-hover:text-blue-400" />
-        // )
 	},
 ]
 
@@ -63,7 +46,7 @@ const MobileNav = ({open, setOpen}) => {
             <div className="flex items-center filter drop-shadow-md h-20 ml-4 mt-8"> 
             {/*logo container*/}
                 <Image 
-                    src={"/innerkomfort-logo.png"} 
+                    src={"/innerkomfort-logo-b.png"} 
                     alt="innerkomfort Logo" 
                     width={243} 
                     height={126} 
@@ -83,7 +66,7 @@ const MobileNav = ({open, setOpen}) => {
             <div className="ml-10 uppercase -mt-4">    
                 <CustomButton 
                     title={"Locate Us"}
-                    onClick={() => router.push("https://goo.gl/maps/7p4NWp3QN9a6VM3RA")}
+                    onClick={() => router.push("https://goo.gl/maps/izcdXUZjavexZVcF7")}
                 />
             </div>
 
@@ -103,20 +86,29 @@ const Header = ()  => {
     const router = useRouter();
     const [open, setOpen] = useState(false);
 
+    const total = useSelector(cartTotalSelector);
+    const [change, setChange] = useState(false);
+
+    const cart = useSelector((state) => state.cart);
+    const ui = useSelector((state) => state.ui);
+    const dispatch = useDispatch();
+    const totalPrice = useSelector(cartTotalPriceSelector);
     const ref = useRef();
 
-    // console.log(
-    //     cart,
-    //     addToCart,
-    //     removeFromCart,
-    //     clearCart,
-    //     subTotal
-    // );
+    useEffect(() => {
+        if (total !== 0) {
+          setChange(true);
+    
+          setTimeout(() => {
+            setChange(false);
+          }, 1000);
+        }
+    }, [total]);
 
-    // console.log(Object.keys(cart))
+    console.log(cart)
 
     const toggleCart = () => {
-        console.log("Clicked");
+        // console.log("Clicked");
         if (ref.current.classList.contains('translate-x-full')) {
             ref.current.classList.remove('translate-x-full')
             ref.current.classList.add('translate-x-0')
@@ -126,15 +118,36 @@ const Header = ()  => {
         }
     }
 
+    const clearCartFunc = () => {
+        console.log("Cleared");
+        console.log(dispatch(clear()));
+        dispatch(clear());
+    }
+
+    // const handlePointerDown = (x) => {
+    //     if (x === true) {
+
+    //     }
+    // }
+
     return (
         <header>
-            <nav className="fixed top-0 z-[1000] flex items-center justify-between w-full px-2 h-[90px] lg:h-[90px] lg:px-52 shadow-lg bg-white">
+            <nav className="fixed top-0 z-[1000] flex items-center justify-between w-full px-2 h-[54px] lg:h-[63px] lg:px-52 shadow-lg bg-white">
                 <Image 
-                    src={"/innerkomfort-logo.png"} 
+                    src={"/innerkomfort-logo-b.png"} 
                     alt="innerkomfort-logo" 
                     width={171} 
-                    height={69} 
-                    className="cursor-pointer filter drop-shadow-md mt-4 mb-2 lg:mb-0" 
+                    height={81} 
+                    className="cursor-pointer filter drop-shadow-md md:hidden" 
+                    onClick={() => router.push("/")}
+                />
+
+                <Image 
+                    src={"/innerkomfort-logo-b.png"} 
+                    alt="innerkomfort-logo" 
+                    width={207} 
+                    height={90} 
+                    className="cursor-pointer filter drop-shadow-md hidden md:block" 
                     onClick={() => router.push("/")}
                 />
 
@@ -143,34 +156,14 @@ const Header = ()  => {
                     {/* Cart Icon */}
                     <div className="md:hidden mt-2 mr-4">
                         <button className="text-red-500" onClick={toggleCart}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             <span className="absolute top-4 pr-1 pl-1 bg-green-500 rounded-full text-xs">
-                                {/* {
-                                    (Object.keys(cart).length === 0) ? (
-                                        <></>
-                                    ) : (
-                                        Object.keys(cart).map((k)=>{
-                                            return (
-                                                <>
-                                                    <div key={k} className="p-1  text-white">{cart[k].qty}</div>
-                                                </>
-                                            )
-                                        })
-                                    )
-                                } */}
+                                <div className="p-1  text-white">{total}</div>
                             </span>
                         </button>
                     </div>
-                    {/* <div className="z-50 flex relative w-8 h-6 flex-col justify-between items-center md:hidden mr-4" onClick={() => {
-                        setOpen(!open)
-                    }}>
-                        hamburger button
-                        <span className={`h-0.5 w-8 bg-[#0B0B45] rounded-lg transform transition duration-300 ease-in-out ${open ? "rotate-45 translate-y-2.5" : ""}`} />
-                        <span className={`h-0.5 w-8 bg-[#0B0B45] rounded-lg transition-all duration-300 ease-in-out ${open ? "w-0" : "w-full"}`} />
-                        <span className={`h-0.5 w-8 bg-[#0B0B45] rounded-lg transform transition duration-300 ease-in-out ${open ? "-rotate-45 -translate-y-2.5" : ""}`} />
-                    </div> */}
 
                     <div className="hidden md:flex ml-auto">
                         <div className="hidden ml-4 md:flex items-center space-x-4 text-[#0B0B45]">
@@ -181,47 +174,16 @@ const Header = ()  => {
                             ))}
 
                             {/* Cart Icon */}
-                            <div className="mt-2">
+                            <div className="mt-2 mr-4">
                                 <button className="text-red-500" onClick={toggleCart}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
                                     <span className="absolute top-4 pr-1 pl-1 bg-green-500 rounded-full text-xs">
-                                        {/* {
-                                            (Object.keys(cart).length === 0) ? (
-                                                <></>
-                                            ) : (
-                                                Object.keys(cart).map((k)=>{
-                                                    return (
-                                                        <>
-                                                            <div key={k} className="p-1  text-white">{cart[k].qty}</div>
-                                                        </>
-                                                    )
-                                                })
-                                            )
-                                        } */}
+                                        <div className="p-1  text-white">{total}</div>
                                     </span>
                                 </button>
-                                
                             </div>
-                        </div>
-
-                        <div className="flex space-x-4">
-                            {/* <button className="text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </button> */}
-
-                            {/* <button className="text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                            </button> */}
-
-                            {/* <button className="uppercase border px-4 py-1 ml-6 rounded font-medium text-white tracking-wide hover:bg-white hover:text-black transition duration-200">
-                                Appointments
-                            </button> */}
                         </div>
                     </div>
                 </div>
@@ -233,65 +195,48 @@ const Header = ()  => {
                         <AiFillCloseCircle />
                     </span>
                     <div className="lg:p-2">
-                        {/* <div className="flex item my-6 font-semibold">
-                            <div className="w-2/3">Items</div>
-                            <div className="flex w-1/3 justify-center items-center">
-                                Qty
-                            </div>
-                        </div> */}
                         <ol className="list-decimal">
-                            {/* {
-                                (Object.keys(cart).length === 0) ? (
+                            {
+                                (cart.length === 0) ? (
                                     <div className="flex justify-center items-center my-4">No Items in cart</div>
                                 ) : (
                                     <>
                                         {
-                                            Object.keys(cart).map((k)=>{
+                                            cart.map((cartItem)=>{
                                                 return (
-                                                    <>
-                                                        <li key={k}>
+                                                    <Fragment key={cartItem.id}>
+                                                        <li>
                                                             <div className="flex item my-4">
-                                                                <div className="w-2/3">{cart[k].name}</div>
+                                                                <div className="w-2/3">{cartItem.title}</div>
                                                                 <div className="flex w-1/3 justify-center items-center">
                                                                     <AiOutlineMinusCircle 
                                                                         className="mx-2 cursor-pointer" 
-                                                                        onClick={()=>removeFromCart(
-                                                                            k,
-                                                                            1,
-                                                                            cart[k].name,
-                                                                            cart[k].price,
-                                                                            cart[k].size,
-                                                                            cart[k].variant
-                                                                        )}
+                                                                        // disabled ={cartItem.quantity === 1}
+                                                                        onClick={()=>{dispatch(decrement(cartItem.id));}}
                                                                     /> 
-                                                                        {cart[k].qty}
+                                                                        {cartItem.quantity}
                                                                     <AiOutlinePlusCircle 
                                                                         className="mx-2 cursor-pointer" 
-                                                                        onClick={()=>addToCart(
-                                                                            k,
-                                                                            1,
-                                                                            cart[k].name,
-                                                                            cart[k].price,
-                                                                            cart[k].size,
-                                                                            cart[k].variant
-                                                                        )}
+                                                                        onClick={()=>{dispatch(increament(cartItem.id));}}
                                                                     />
                                                                 </div>
                                                             </div>
                                                         </li>
-                                                    </>
+                                                    </Fragment>
                                                 )
                                             })
                                         }
                                     </>
                                 )
-                            } */}
+                            }
                         </ol>
                     </div>
 
                     <div className="">
-                        {/* <h3 className="flex text-lg font-semibold p-4 text-center justify-center items-center mt-8">Subtotal: {subTotal}</h3> */}
-                        <h3 className="flex text-lg font-semibold p-4 text-center justify-center items-center mt-8">Subtotal: </h3>
+                        {
+                            totalPrice > 0 && <h3 className="flex text-lg font-semibold p-4 text-center justify-center items-center mt-8">Subtotal: {totalPrice}</h3>
+                        }
+                        {/* <h3 className="flex text-lg font-semibold p-4 text-center justify-center items-center mt-8">Subtotal: </h3> */}
                     </div>
 
                     <div className="flex justify-center items-center text-center text-sm md:text-md">
@@ -304,7 +249,7 @@ const Header = ()  => {
 
                         <button 
                             className="mt-2 border px-2 py-1 ml-6 rounded-md tracking-wide bg-[#070077] text-white hover:bg-blue-600 hover:text-white transition duration-200 shadow-lg" 
-                            // onClick={clearCart}
+                            onClick={clearCartFunc}
                         >
                             Clear Cart
                         </button>

@@ -78,7 +78,7 @@ export default function Document() {
                 "@context": "http://schema.org/",
                 "@type": "${Business.bizType}",
                 "url": "${DOMAIN_URL}",
-                "logo": "${DOMAIN_URL}/innerkomfort-logo.png"
+                "logo": "${DOMAIN_URL}/innerkomfort-log-b.png"
             }`}}>
         </script>
 

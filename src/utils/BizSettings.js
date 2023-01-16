@@ -22,7 +22,7 @@ export const Business = {
 export const BackLinks = {
     links: {
         fb: "https://www.facebook.com/innerkomfort/",
-        Insta: "https://www.instagram.com/24_aryavrat_/",
+        Insta: "https://www.instagram.com/innerkomfort/",
         tw: "https://twitter.com/innerkomfort/",
         Ln: "https://www.linkedin.com/innerkomfort/",
         Pn: "https://in.pinterest.com/innerkomfort/",
